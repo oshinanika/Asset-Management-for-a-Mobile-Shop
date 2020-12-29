@@ -16,6 +16,7 @@ if(isset($_POST['form1'])) {
 	
 		if(empty($_POST['old_password'])) {
 			throw new Exception("Old password field can not be empty");
+		}
 		
 		if(empty($_POST['new_password'])) {
 			throw new Exception("New password field can not be empty");
