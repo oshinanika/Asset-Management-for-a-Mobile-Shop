@@ -48,8 +48,8 @@ if(isset($_POST['form1'])) {
 	while($row=mysql_fetch_array($result)) 
 	{
 		$fullname = $row['name'];
-		$username = $row['username'];
-		$empid = $row['emp_id'];
+		$singleid = $row['username'];
+		$genid = $row['emp_id'];
 		$designation = $row['designation'];
 		$mobile = $row['mobile'];
 		$desklocation = $row['desk_location'];
@@ -102,7 +102,18 @@ if(isset($_POST['form1'])) {
     </head>
     <body class="page-header-fixed">
         <div class="overlay"></div>
-				
+		
+		<?php 
+		include ('wrap-menu.php');
+		?>		
+        <form class="search-form" action="#" method="GET">
+            <div class="input-group">
+                <input type="text" name="search" class="form-control search-input" placeholder="Search...">
+                <span class="input-group-btn">
+                    <button class="btn btn-default close-search waves-effect waves-button waves-classic" type="button"><i class="fa fa-times"></i></button>
+                </span>
+            </div><!-- Input Group -->
+        </form><!-- Search Form -->
         <main class="page-content content-wrap">
             <?php
 			include('top-nav.php');
@@ -130,7 +141,7 @@ if(isset($_POST['form1'])) {
                             <ul class="list-unstyled text-center">
                                 <li><p><i class="fa fa-map-marker m-r-xs"></i><?php echo $desklocation?></p></li>
                                 <li><p><i class="fa fa-mobile-phone m-r-xs"></i>+880<?php echo $mobile?></p></li>
-                                <li><p><i class="fa fa-envelope m-r-xs"></i><a href="#"><?php echo $username?>@smartshopbd.com</a></p></li>
+                                <li><p><i class="fa fa-envelope m-r-xs"></i><a href="#"><?php echo $username?>@samsung.com</a></p></li>
                             </ul>
                             <hr>
 													
@@ -158,7 +169,7 @@ if(isset($_POST['form1'])) {
 										<div class="form-group">
                                             <label for="input-placeholder" class="col-sm-4 control-label">Employee ID</label>
                                             <div class="col-sm-8">
-                                                <input name="emp_id" type="text" value="<?php echo $empid?>" class="form-control">
+                                                <input name="emp_id" type="text" value="<?php echo $genid?>" class="form-control">
                                             </div>
                                         </div>
 										<div class="form-group">
@@ -209,7 +220,63 @@ if(isset($_POST['form1'])) {
                 </div>
             </div><!-- Page Inner -->
         </main><!-- Page Content -->
-        
+        <nav class="cd-nav-container" id="cd-nav">
+            <header>
+                <h3>Navigation</h3>
+                <a href="#0" class="cd-close-nav">Close</a>
+            </header>
+            <ul class="cd-nav list-unstyled">
+                <li class="cd-selected" data-menu="index">
+                    <a href="javsacript:void(0);">
+                        <span>
+                            <i class="glyphicon glyphicon-home"></i>
+                        </span>
+                        <p>Dashboard</p>
+                    </a>
+                </li>
+                <li data-menu="profile">
+                    <a href="javsacript:void(0);">
+                        <span>
+                            <i class="glyphicon glyphicon-user"></i>
+                        </span>
+                        <p>Profile</p>
+                    </a>
+                </li>
+                <li data-menu="inbox">
+                    <a href="javsacript:void(0);">
+                        <span>
+                            <i class="glyphicon glyphicon-envelope"></i>
+                        </span>
+                        <p>Mailbox</p>
+                    </a>
+                </li>
+                <li data-menu="#">
+                    <a href="javsacript:void(0);">
+                        <span>
+                            <i class="glyphicon glyphicon-tasks"></i>
+                        </span>
+                        <p>Tasks</p>
+                    </a>
+                </li>
+                <li data-menu="#">
+                    <a href="javsacript:void(0);">
+                        <span>
+                            <i class="glyphicon glyphicon-cog"></i>
+                        </span>
+                        <p>Settings</p>
+                    </a>
+                </li>
+                <li data-menu="calendar">
+                    <a href="javsacript:void(0);">
+                        <span>
+                            <i class="glyphicon glyphicon-calendar"></i>
+                        </span>
+                        <p>Calendar</p>
+                    </a>
+                </li>
+            </ul>
+        </nav>
+        <div class="cd-overlay"></div>
 	
 
         <!-- Javascripts -->

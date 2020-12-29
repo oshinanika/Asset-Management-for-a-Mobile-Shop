@@ -118,6 +118,26 @@ if(isset($_POST['form1'])) {
     <body class="page-header-fixed">
         <div class="overlay"></div>
         
+        <div class="menu-wrap">
+            <nav class="profile-menu">
+                <div class="profile"><img src="assets/images/avatar1.png" width="52" alt="Subrata Bhowmik"/><span>Dynamic Name</span></div>
+                <div class="profile-menu-list">
+                    <a href="#"><i class="fa fa-star"></i><span>Favorites</span></a>
+                    <a href="#"><i class="fa fa-bell"></i><span>Alerts</span></a>
+                    <a href="#"><i class="fa fa-envelope"></i><span>Messages</span></a>
+                    <a href="#"><i class="fa fa-comment"></i><span>Comments</span></a>
+                </div>
+            </nav>
+            <button class="close-button" id="close-button">Close Menu</button>
+        </div>
+        <form class="search-form" action="#" method="GET">
+            <div class="input-group">
+                <input type="text" name="search" class="form-control search-input" placeholder="Search...">
+                <span class="input-group-btn">
+                    <button class="btn btn-default close-search waves-effect waves-button waves-classic" type="button"><i class="fa fa-times"></i></button>
+                </span>
+            </div><!-- Input Group -->
+        </form><!-- Search Form -->
         <main class="page-content content-wrap">
            <?php
 			include('top-nav.php');
@@ -163,7 +183,7 @@ if(isset($_POST['form1'])) {
                                             </div>
                                         </div>								
                                         <div class="form-group">
-                                            <label for="input-help-block" class="col-sm-3 control-label"><span class="text-info">Old Password</span></label>
+                                            <label for="input-help-block" class="col-sm-3 control-label"><span class="text-danger">Old Password</span></label>
                                             <div class="col-sm-7">
                                                 <input type="password" name="old_password" placeholder="Old Password" class="form-control" id="input-help-block">
                                                 
@@ -202,6 +222,62 @@ if(isset($_POST['form1'])) {
                 </div>
             </div><!-- Page Inner -->
         </main><!-- Page Content -->
+        <nav class="cd-nav-container" id="cd-nav">
+            <header>
+                <h3>Navigation</h3>
+                <a href="#0" class="cd-close-nav">Close</a>
+            </header>
+            <ul class="cd-nav list-unstyled">
+                <li class="cd-selected" data-menu="index">
+                    <a href="javsacript:void(0);">
+                        <span>
+                            <i class="glyphicon glyphicon-home"></i>
+                        </span>
+                        <p>Dashboard</p>
+                    </a>
+                </li>
+                <li data-menu="profile">
+                    <a href="javsacript:void(0);">
+                        <span>
+                            <i class="glyphicon glyphicon-user"></i>
+                        </span>
+                        <p>Profile</p>
+                    </a>
+                </li>
+                <li data-menu="inbox">
+                    <a href="javsacript:void(0);">
+                        <span>
+                            <i class="glyphicon glyphicon-envelope"></i>
+                        </span>
+                        <p>Mailbox</p>
+                    </a>
+                </li>
+                <li data-menu="#">
+                    <a href="javsacript:void(0);">
+                        <span>
+                            <i class="glyphicon glyphicon-tasks"></i>
+                        </span>
+                        <p>Tasks</p>
+                    </a>
+                </li>
+                <li data-menu="#">
+                    <a href="javsacript:void(0);">
+                        <span>
+                            <i class="glyphicon glyphicon-cog"></i>
+                        </span>
+                        <p>Settings</p>
+                    </a>
+                </li>
+                <li data-menu="calendar">
+                    <a href="javsacript:void(0);">
+                        <span>
+                            <i class="glyphicon glyphicon-calendar"></i>
+                        </span>
+                        <p>Calendar</p>
+                    </a>
+                </li>
+            </ul>
+        </nav>
         <div class="cd-overlay"></div>
 	
 

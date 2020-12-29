@@ -6,73 +6,26 @@ if($_SESSION['name']!='ams')
 	header('location: login.php');
 }
 ?>
-<?php include('config.php'); ?>
-<?php include('config.php');
-$name1 = $_SESSION['name1'];
-$username = $_SESSION['username'];
- ?>
 <?php
 include('config.php');
+$username = $_SESSION['username'];
+
+if(isset($_REQUEST['id'])) {
+	$id = $_REQUEST['id'];
+}
+else {
+	header('location: index.php');
+}
+
 if(isset($_POST['form1'])) {
-$sql1= mysql_query("SELECT username from tbl_login where username = '$_POST[username]'");
-    
-$row = mysql_fetch_array($sql1);
-$check = $row['username'];
+
 	try {
-
-        if(empty($_POST['username'])) {
-			throw new Exception('User name can not be empty');
-        }
-        
-        if($_POST['username']==$check) {
-			throw new Exception('User name already taken');
-		}
-	
-		if(empty($_POST['name'])) {
-			throw new Exception('Name can not be empty');
-        }
-        
-        if(empty($_POST['emp_id'])) {
-			throw new Exception('Employee ID can not be empty');
-        }
-
-        if(empty($_POST['password'])) {
-			throw new Exception('Password can not be empty');
-        }
-
-        $pass = $_POST['password'];
-        $p1 = "/[a-z]+/";
-        $p2 = "/[A-Z]+/";
-        $p3 = "/[0-9]+/";
-        $p4 = "/[@#!$%^&?]+/";
-        if(!preg_match($p4, $pass) || !preg_match($p1, $pass) || !preg_match($p2, $pass) || !preg_match($p3, $pass)){
-            throw new Exception("New Password did not matched criteria");
-        }
-        
-        if(empty($_POST['confirm_password'])) {
-			throw new Exception('Confirm password can not be empty');
-        }
-
-        if($_POST['password'] != $_POST['confirm_password']) {
-			throw new Exception("Confirm passwords does not match!");
-		}
-
-        if(empty($_POST['mobile'])) {
-			throw new Exception('Mobile can not be empty');
-        }
+				
+        $result = mysql_query("update tbl_assetinfo set color='$_POST[color]',availability='$_POST[availability]',storage_location='$_POST[storage_location]',remarks='$_POST[remarks]' where sl_id='$id'");
 		
-		if(empty($_POST['access_type'])) {
-			throw new Exception('Please confirm type of user');
-		} 
-        
-		$encript_pass = $_POST['password'];
-		$encript_pass = md5 ($encript_pass);
 		
-		$result = mysql_query("insert into tbl_login (name, access_type, username, emp_id, password, designation, mobile, desk_location) values('$_POST[name]','$_POST[access_type]','$_POST[username]','$_POST[emp_id]', '$encript_pass', '$_POST[designation]', '$_POST[mobile]', '$_POST[desk_location]') ");
+		$success_message = 'Your data successfully updated in system';
 		
-		$success_message = 'New user creation is Successful.';
-		
-	
 	}
 	
 	catch(Exception $e) {
@@ -83,14 +36,12 @@ $check = $row['username'];
 
 ?>
 
-
-
 <!DOCTYPE html>
 <html>
     <head>
         
         <!-- Title -->
-        <title>AMS | Creat User Page</title>
+        <title>MSCA | Asset Update Page</title>
         
         <meta content="width=device-width, initial-scale=1" name="viewport"/>
         <meta charset="UTF-8">
@@ -121,7 +72,6 @@ $check = $row['username'];
         
         <script src="assets/plugins/3d-bold-navigation/js/modernizr.js"></script>
         <script src="assets/plugins/offcanvasmenueffects/js/snap.svg-min.js"></script>
-        <script src="assets/js/password.js"></script>
         
         <!-- HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries -->
         <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
@@ -163,12 +113,12 @@ $check = $row['username'];
             
             <div class="page-inner">
                 <div class="page-title">
-                    <h3>Create User</h3>
+                    <h3>Credit Card Info</h3>
                     <div class="page-breadcrumb">
                         <ol class="breadcrumb">
                             <li><a href="index.php">Home</a></li>
-                            <li><a href="#">User Setup</a></li>
-                            <li class="active">Create User</li>
+                            <li><a href="#">Asset</a></li>
+                            <li class="active">Update</li>
                         </ol>
                     </div>
                 </div>
@@ -177,104 +127,147 @@ $check = $row['username'];
                         <div class="col-md-12">
                             <div class="panel panel-white">
                                 <div class="panel-heading clearfix">
-									<h4 class="text-danger">
-									<?php  
-									if(isset($error_message)) {echo $error_message;}
-									?>
-									</h4>
 									<h4 class="text-success">
 									<?php  
+									if(isset($error_message)) {echo $error_message;}
 									if(isset($success_message)) {echo $success_message;}
 									?>
 									</h4>
                                 </div>
+								
+								<?php
+									
+										$result = mysql_query("SELECT* FROM tbl_assetinfo INNER JOIN tbl_devicelist ON tbl_assetinfo.model_name = tbl_devicelist.model_name WHERE sl_id='$id'");
+										while($row=mysql_fetch_array($result)) 
+										{
+											
+											$asset_code = $row['asset_code'];
+											$company = $row['company'];
+											$device_type = $row['device_type'];
+											$model_name = $row['model_name'];
+											$operating_system = $row['operating_system'];
+											$color = $row['color'];
+											$availability = $row['availability'];
+											$storage_location = $row['storage_location'];
+											$checkin_date = $row['checkin_date'];
+											$price = $row['price'];
+											$remarks = $row['remarks'];
+										}
+
+										?>
+								
                                 <div class="panel-body">
                                     <form action="" method="post" class="form-horizontal col-md-7">
-										
+																				
                                         <div class="form-group">
-                                            <label for="input-help-block" class="col-sm-2 control-label">User Name <span style="color:red">*</span></label>
+                                            <label for="input-help-block" class="col-sm-2 control-label">Asset Code<span class="text-danger"></span></label>
                                             <div class="col-sm-10">
-                                                <input type="text" name="username" class="form-control" id="input-help-block">
-                                                <p class="help-block text-primary">Guideline : Alpha Numeric</p>
+                                                <input disabled type="text" name="asset_code" class="form-control" id="input-help-block" value="<?php echo $asset_code; ?>">
                                             </div>
                                         </div>
-										<div class="form-group">
-                                            <label for="input-help-block" class="col-sm-2 control-label">Full Name <span style="color:red">*</span></label>
-                                            <div class="col-sm-10">
-                                                <input type="text" name="name" class="form-control" id="input-help-block">
-                                                <p class="help-block text-primary">Guideline : Only Text</p>
-                                            </div>
-                                        </div>
+																				
                                         <div class="form-group">
-                                            <label for="input-help-block" class="col-sm-2 control-label">Employee Id <span style="color:red">*</span></label>
+                                            <label for="input-help-block" class="col-sm-2 control-label">Company Name<span class="text-danger"></span></label>
                                             <div class="col-sm-10">
-                                                <input type="number" name="emp_id" class="form-control" id="input-help-block">
-                                                <p class="help-block text-primary">Guideline : Only Numbers</p>
+                                                <input disabled type="text" name="company" class="form-control" id="input-help-block" value="<?php echo $company; ?>">
                                             </div>
                                         </div>
-										<div class="form-group">
-                                            <label for="input-help-block" class="col-sm-2 control-label">Password <span style="color:red">*</span></label>
-                                            <div class="col-sm-10">
-                                                <input type="password" name="password" class="form-control" id="password" onkeyup="showHintPassword(this.value)">
-                                                <p id="hint_password"class="help-block text-danger">Guideline : Complex [Uppercase, Lowercase, Number, Special Character]</p>
-                                            </div>
-                                        </div>
+																				
                                         <div class="form-group">
-                                            <label for="input-help-block" class="col-sm-2 control-label">Confirm Password <span style="color:red">*</span></label>
+                                            <label for="input-help-block" class="col-sm-2 control-label">Device Type<span class="text-danger"></span></label>
                                             <div class="col-sm-10">
-                                                <input type="password" name="confirm_password" class="form-control" id="confirm_password" onkeyup="showHintConfirmPassword(this.value)">
-                                                <p id="hint_confirm_password" class="help-block text-danger">Guideline : Must matched with password</p>
+                                                <input disabled type="text" name="device_type" class="form-control" id="input-help-block" value="<?php echo $device_type; ?>">
                                             </div>
                                         </div>
+																				
                                         <div class="form-group">
-                                            <label for="input-help-block" class="col-sm-2 control-label">Designation</label>
+                                            <label for="input-help-block" class="col-sm-2 control-label">Model Name<span class="text-danger"></span></label>
                                             <div class="col-sm-10">
-                                                <input type="text" name="designation" class="form-control" id="input-help-block">
-                                                <p class="help-block text-primary">Guideline : Only Text</p>
+                                                <input disabled type="text" name="model_name" class="form-control" id="input-help-block" value="<?php echo $model_name; ?>">
                                             </div>
                                         </div>
+																				
                                         <div class="form-group">
-                                            <label for="input-help-block" class="col-sm-2 control-label">Mobile <span style="color:red">*</span></label>
+                                            <label for="input-help-block" class="col-sm-2 control-label">Operating System<span class="text-danger"></span></label>
                                             <div class="col-sm-10">
-                                                <input type="number" name="mobile" class="form-control" id="input-help-block">
-                                                <p class="help-block text-primary">Guideline : Only Numbers</p>
+                                                <input disabled type="text" name="operating_system" class="form-control" id="input-help-block" value="<?php echo $operating_system; ?>">
                                             </div>
                                         </div>
+																				
                                         <div class="form-group">
-                                            <label for="input-help-block" class="col-sm-2 control-label">Desk Location</label>
+                                            <label for="input-help-block" class="col-sm-2 control-label">Color<span class="text-danger"></span></label>
                                             <div class="col-sm-10">
-                                                <input type="text" name="desk_location" class="form-control" id="input-help-block">
-                                                <p class="help-block text-primary">Guideline : Alpha Numeric</p>
+                                                <select class="js-states form-control" name="color">
+                                                    <option>Please Specify Below</option>
+                                                    <option <?php if($color == "Black") echo "selected"?>>Black</option>
+                                                    <option <?php if($color == "Silver") echo "selected"?>>Silver</option>
+                                                    <option <?php if($color == "Blue") echo "selected"?>>Blue</option>
+                                                    <option <?php if($color == "White") echo "selected"?>>White</option>
+                                                </select>
                                             </div>
                                         </div>
-										<div class="form-group">
-                                            <label for="input-help-block" class="col-sm-2 control-label">User Type <span style="color:red">*</span></label>
+																				
+                                        <div class="form-group">
+                                            <label for="input-help-block" class="col-sm-2 control-label">Availability<span class="text-danger"></span></label>
                                             <div class="col-sm-10">
-                                                <select name="access_type" class="form-control" id="input-help-block">			
-												  <option value="">Please Select Below</option>
-												  <option value="admin">Admin</option>
-												  <option value="user">User</option>									  
-												  <option value="guest">Guest</option>									  
-												</select>
+                                                <select class="js-states form-control" name="availability">
+                                                    <option>Please Specify Below</option>
+                                                    <option <?php if($availability == "In Stock") echo "selected"?>>In Stock</option>
+                                                    <option <?php if($availability == "Borrowed") echo "selected"?>>Borrowed</option>
+                                                    <option <?php if($availability == "Sold") echo "selected"?>>Sold</option>
+                                                </select>
                                             </div>
                                         </div>
-										
-										
+																				
+                                        <div class="form-group">
+                                            <label for="input-help-block" class="col-sm-2 control-label">Storage Location<span class="text-danger"></span></label>
+                                            <div class="col-sm-10">
+                                                <select class="js-states form-control" name="storage_location">
+                                                    <option>Please Specify Below</option>
+                                                    <option <?php if($storage_location == "Cabinet 1") echo "selected"?>>Cabinet 1</option>
+                                                    <option <?php if($storage_location == "Cabinet 2") echo "selected"?>>Cabinet 2</option>
+                                                    <option <?php if($storage_location == "Cabinet 3") echo "selected"?>>Cabinet 3</option>
+                                                    <option <?php if($storage_location == "Display 1") echo "selected"?>>Display 1</option>
+                                                    <option <?php if($storage_location == "Display 2") echo "selected"?>>Display 2</option>
+                                                    <option <?php if($storage_location == "Others") echo "selected"?>>Others</option>
+                                                </select>
+                                            </div>
+                                        </div>
+																				
+                                        <div class="form-group">
+                                            <label for="input-help-block" class="col-sm-2 control-label">Check In Date<span class="text-danger"></span></label>
+                                            <div class="col-sm-10">
+                                                <input disabled type="text" name="checkin_date" class="form-control" id="input-help-block" value="<?php echo $checkin_date; ?>">
+                                            </div>
+                                        </div>
+																				
+                                        <div class="form-group">
+                                            <label for="input-help-block" class="col-sm-2 control-label">Price<span class="text-danger"></span></label>
+                                            <div class="col-sm-10">
+                                                <input disabled type="text" name="price" class="form-control" id="input-help-block" value="<?php echo $price; ?>">
+                                            </div>
+                                        </div>
+																				
+                                        <div class="form-group">
+                                            <label for="input-help-block" class="col-sm-2 control-label">Remarks<span class="text-danger"></span></label>
+                                            <div class="col-sm-10">
+                                                <textarea class="form-control" rows="10" name="remarks"><?php echo $remarks; ?></textarea>
+                                            </div>
+                                        </div>							
 										<div class="form-group">
                                             <label class="col-sm-2 control-label"></label>
                                             <div class="col-sm-10">
-                                                <button type="submit" name="form1" class="btn btn-primary btn-addon m-b-sm btn-lg"><i class="fa fa-plus"></i> Add User</button>
+                                                <button type="submit" name="form1" class="btn btn-success btn-addon m-b-sm btn-lg"><i class="fa fa-edit"></i> Update</button>
                                             </div>
                                         </div>										
-                                    </form>								
-																		
+                                    </form>
                                 </div>
                             </div>
                         </div>
                     </div><!-- Row -->
                 </div><!-- Main Wrapper -->
                 <div class="page-footer">
-                    <p class="no-s">MIT 21<sup>st</sup> Batch, Institute of Information Technology, University of Dhaka.</p>
+                    <p class="no-s">All rights reserved by; SEA C&S Offshore QA Collaboration Y2017</p>
                 </div>
             </div><!-- Page Inner -->
         </main><!-- Page Content -->

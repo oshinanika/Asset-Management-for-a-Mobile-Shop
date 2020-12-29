@@ -6,17 +6,25 @@ if($_SESSION['name']!='ams')
 	header('location: login.php');
 }
 ?>
-<?php include('config.php');
-$name1 = $_SESSION['name1'];
+<?php
+include('config.php');
 $username = $_SESSION['username'];
- ?>
+
+if(isset($_REQUEST['id'])) {
+	$id = $_REQUEST['id'];
+}
+else {
+	header('location: index.php');
+}
+//echo $sl_id;
+?>
 
 <!DOCTYPE html>
 <html>
     <head>
         
         <!-- Title -->
-        <title>AMS | User List</title>
+        <title>AMS | Asset Details</title>
         
         <meta content="width=device-width, initial-scale=1" name="viewport"/>
         <meta charset="UTF-8">
@@ -65,6 +73,8 @@ $username = $_SESSION['username'];
     </head>
     <body class="page-header-fixed">
         <div class="overlay"></div>
+		
+
         <nav class="cbp-spmenu cbp-spmenu-vertical cbp-spmenu-right" id="cbp-spmenu-s1">
             <h3><span class="pull-left">Chat</span><a href="javascript:void(0);" class="pull-right" id="closeRight"><i class="fa fa-times"></i></a></h3>
             <div class="slimscroll">
@@ -156,7 +166,7 @@ $username = $_SESSION['username'];
                         </a>
                     </div>
                     <div class="logo-box">
-                        <a href="index.php" class="logo-text"><span>AMS~MIT</span></a>
+                        <a href="index.php" class="logo-text"><span>MSCA~SRBD</span></a>
                     </div><!-- Logo Box -->
                     <div class="search-button">
                         <a href="javascript:void(0);" class="waves-effect waves-button waves-classic show-search"><i class="fa fa-search"></i></a>
@@ -172,65 +182,112 @@ $username = $_SESSION['username'];
 			<!-- Page Sidebar -->
             <div class="page-inner">
                 <div class="page-title">
-                    <h3>User List</h3>
+                    <h3>Asset Page</h3>
                     <div class="page-breadcrumb">
                         <ol class="breadcrumb">
                             <li><a href="index.php">Home</a></li>
-                            <li><a href="#">User Setup</a></li>
-                            <li class="active">View List</li>
+                            <li><a href="#">Asset</a></li>
+                            <li class="active">Details</li>
                         </ol>
                     </div>
                 </div>
                 <div id="main-wrapper">
                     <div class="row">
                         <div class="col-md-12">
-                            <div class="panel panel-white">
+						    <div class="panel panel-white">
                                 
                                 <div class="panel-body">
                                    <div class="table-responsive">
-                                    <table id="example" class="display table" style="width: 100%; cellspacing: 0;">
+                                    <table id="example" class="table table-data" style="width: 100%; cellspacing: 0;">
                                         <thead>
-                                            <tr>
-												<th>Serial No</th>
-												<th>Full Name</th>
-												<th>User Name</th>				
-												<th>User Type</th>
-												<th>Designation</th>
-												<th>Mobile</th>
-												<th>Action</th>
-											</tr>
+                                            
                                         </thead>
-                                        
                                         <tbody>
-												<?php
-												$i=0;
-												$result = mysql_query("select * from tbl_login order by name");			
-												while($row=mysql_fetch_array($result))
-												{
-													$i++;
-													?>
-													
-													<tr>
-													<td><?php echo $i; ?></td>
-													<td><?php echo $row['name']; ?></td>
-													<td><?php echo $row['username']; ?></td>
-													<td><?php echo $row['access_type']; ?></td>
-													<td><?php echo $row['designation']; ?></td>
-													<td><?php echo $row['mobile']; ?></td>
-													<td>
-														<a onclick="return confirm_delete();" href="user-delete.php?id=<?php echo $row['id']; ?>type="submit" class="btn btn btn-danger""><span class="glyphicon glyphicon-trash"></span> </a>&nbsp;&nbsp;&nbsp;
-													</td>
-													
-													
-													</tr>
-													
-													<?php
-												}
 												
-												?>
 											   
-                                           </tbody>
-                                       </table>  
+                                         </tbody>
+                                    </table>  
+									<?php
+									
+										$result = mysql_query("SELECT* FROM tbl_assetinfo INNER JOIN tbl_devicelist ON tbl_assetinfo.model_name = tbl_devicelist.model_name WHERE sl_id='$id'");
+										while($row=mysql_fetch_array($result)) 
+										{
+											
+											$asset_code = $row['asset_code'];
+											$company = $row['company'];
+											$device_type = $row['device_type'];
+											$model_name = $row['model_name'];
+											$operating_system = $row['operating_system'];
+											$color = $row['color'];
+											$availability = $row['availability'];
+											$storage_location = $row['storage_location'];
+											$checkin_date = $row['checkin_date'];
+											$price = $row['price'];
+											$remarks = $row['remarks'];
+
+										}
+
+										?>
+
+
+										
+										<table class="table ">
+											<tr > 
+											<td></td>
+											<td><span class="pull-right"><a class="btn btn btn-primary" type="submit" href="asset-view-single-update.php?id=<?php echo $id; ?>"><span class="glyphicon glyphicon-edit"></span> </a>
+														<a onclick="return confirm_delete();" type="submit" class="btn btn btn-danger" href="asset-delete.php?id=<?php echo $id; ?>"><span class="glyphicon glyphicon-trash"></span> </a>&nbsp;&nbsp;&nbsp;
+												</span>
+												</td>
+											</tr>
+											
+                                            <tr>
+												<td><b>Asset Code</b></td>
+												<td class="text-info"><?php echo $asset_code; ?></td>
+											</tr>
+											<tr>
+												<td><b>Company Name</b></td>
+												<td ><?php echo $company; ?></td>
+											</tr>
+                                            <tr>
+												<td><b>Device Type</b></td>
+												<td ><?php echo $device_type; ?></td>
+											</tr>
+                                            <tr>
+												<td><b>Model Name</b></td>
+												<td ><?php echo $model_name; ?></td>
+											</tr>
+                                            <tr>
+												<td><b>Operating System</b></td>
+												<td ><?php echo $operating_system; ?></td>
+											</tr>
+                                            <tr>
+												<td><b>Color</b></td>
+												<td ><?php echo $color; ?></td>
+											</tr>
+                                            <tr>
+												<td><b>Availability</b></td>
+												<td ><?php echo $availability; ?></td>
+											</tr>
+                                            <tr>
+												<td><b>Storage Location</b></td>
+												<td ><?php echo $storage_location; ?></td>
+											</tr>
+                                            <tr>
+												<td><b>Check In Date</b></td>
+												<td ><?php echo $checkin_date; ?></td>
+											</tr>
+                                            <tr>
+												<td><b>Price</b></td>
+												<td ><?php echo $price; ?></td>
+											</tr>
+                                            <tr>
+												<td><b>Remarks</b></td>
+												<td ><?php echo $remarks; ?></td>
+											</tr>
+											
+											
+										</table>   
+									   
                                     </div>
                                 </div>
                             </div>
@@ -239,10 +296,67 @@ $username = $_SESSION['username'];
                     </div><!-- Row -->
                 </div><!-- Main Wrapper -->
                 <div class="page-footer">
-                    <p class="no-s">MIT 21<sup>st</sup> Batch, Institute of Information Technology, University of Dhaka.</p>
+                    <p class="no-s">All rights reserved by; SEA C&S Offshore QA Collaboration Y2017</p>
                 </div>
             </div><!-- Page Inner -->
-        </main><!-- Page Content --
+        </main><!-- Page Content -->
+        <nav class="cd-nav-container" id="cd-nav">
+            <header>
+                <h3>Navigation</h3>
+                <a href="#0" class="cd-close-nav">Close</a>
+            </header>
+            <ul class="cd-nav list-unstyled">
+                <li class="cd-selected" data-menu="index">
+                    <a href="javsacript:void(0);">
+                        <span>
+                            <i class="glyphicon glyphicon-home"></i>
+                        </span>
+                        <p>Dashboard</p>
+                    </a>
+                </li>
+                <li data-menu="profile">
+                    <a href="javsacript:void(0);">
+                        <span>
+                            <i class="glyphicon glyphicon-user"></i>
+                        </span>
+                        <p>Profile</p>
+                    </a>
+                </li>
+                <li data-menu="inbox">
+                    <a href="javsacript:void(0);">
+                        <span>
+                            <i class="glyphicon glyphicon-envelope"></i>
+                        </span>
+                        <p>Mailbox</p>
+                    </a>
+                </li>
+                <li data-menu="#">
+                    <a href="javsacript:void(0);">
+                        <span>
+                            <i class="glyphicon glyphicon-tasks"></i>
+                        </span>
+                        <p>Tasks</p>
+                    </a>
+                </li>
+                <li data-menu="#">
+                    <a href="javsacript:void(0);">
+                        <span>
+                            <i class="glyphicon glyphicon-cog"></i>
+                        </span>
+                        <p>Settings</p>
+                    </a>
+                </li>
+                <li data-menu="calendar">
+                    <a href="javsacript:void(0);">
+                        <span>
+                            <i class="glyphicon glyphicon-calendar"></i>
+                        </span>
+                        <p>Calendar</p>
+                    </a>
+                </li>
+            </ul>
+        </nav>
+        <div class="cd-overlay"></div>
 	
 
         <!-- Javascripts -->

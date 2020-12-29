@@ -6,17 +6,72 @@ if($_SESSION['name']!='ams')
 	header('location: login.php');
 }
 ?>
-<?php include('config.php');
-$name1 = $_SESSION['name1'];
+<?php
+include('config.php');
+date_default_timezone_set('Asia/Dhaka');
 $username = $_SESSION['username'];
- ?>
 
+if(isset($_POST['form1'])){ 
+ 
+
+	try {
+        
+        if(empty($_POST['asset_code'])) {
+			throw new Exception('Asset Code is empty.');
+        }
+	
+		if(empty($_POST['customer_name'])) {
+			throw new Exception('Customer Name is empty.');
+        }
+        
+        if(empty($_POST['customer_number'])) {
+			throw new Exception('Customer Number is empty.');
+		}
+
+        if(empty($_POST['customer_address'])) {
+			throw new Exception('Customer Address is empty.');
+		}
+
+        $date = (new DateTime())->format('Y-m-d H:i:s');
+		$result = mysql_query("insert into tbl_soldout (asset_code, user_id, customer_name, customer_phone, customer_address, date) values('$_POST[asset_code]','$username','$_POST[customer_name]','$_POST[customer_number]','$_POST[customer_address]','$date')");
+		$success_message = 'Asset sold successful.';
+
+        $availability = "Sold";
+        $query = mysql_query("update tbl_assetinfo set storage_location='Not defined', availability='$availability' where asset_code='$_POST[asset_code]'");
+        
+		header("LOCATION:asset-soldout.php");
+	}
+	
+	catch(Exception $e) {
+		$error_message = $e->getMessage();
+	}
+	
+}
+
+?>
+<script>
+function setDevice(str) {
+    var xmlhttp = new XMLHttpRequest();
+    
+    xmlhttp.onreadystatechange = function() {
+    if (this.readyState == 4 && this.status == 200) {
+        var result = this.responseText;
+        res = result.split(',');
+        document.getElementById("company").innerHTML = "Company: "+res[1];
+        document.getElementById("device_type").innerHTML = "Type: "+res[0];
+        document.getElementById("model_name").innerHTML = "Model: "+res[2];
+    }
+    };
+    xmlhttp.open("GET", "ajax/get-device.php?q=" + str, true);
+    xmlhttp.send();
+  }
+</script>
 <!DOCTYPE html>
 <html>
     <head>
         
         <!-- Title -->
-        <title>AMS | User List</title>
+        <title>AMS | Sell Asset</title>
         
         <meta content="width=device-width, initial-scale=1" name="viewport"/>
         <meta charset="UTF-8">
@@ -36,10 +91,7 @@ $username = $_SESSION['username'];
         <link href="assets/plugins/switchery/switchery.min.css" rel="stylesheet" type="text/css"/>
         <link href="assets/plugins/3d-bold-navigation/css/style.css" rel="stylesheet" type="text/css"/>	
         <link href="assets/plugins/slidepushmenus/css/component.css" rel="stylesheet" type="text/css"/>
-        <link href="assets/plugins/datatables/css/jquery.datatables.min.css" rel="stylesheet" type="text/css"/>	
-        <link href="assets/plugins/datatables/css/jquery.datatables_themeroller.css" rel="stylesheet" type="text/css"/>	
-        <link href="assets/plugins/x-editable/bootstrap3-editable/css/bootstrap-editable.css" rel="stylesheet" type="text/css">
-        <link href="assets/plugins/bootstrap-datepicker/css/datepicker3.css" rel="stylesheet" type="text/css"/>
+        <link href="assets/plugins/select2/css/select2.min.css" rel="stylesheet" type="text/css"/>
         
         <!-- Theme Styles -->
         <link href="assets/css/modern.min.css" rel="stylesheet" type="text/css"/>
@@ -55,12 +107,6 @@ $username = $_SESSION['username'];
         <script src="https://oss.maxcdn.com/html5shiv/3.7.2/html5shiv.min.js"></script>
         <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
         <![endif]-->
-		
-		<script>
-		function confirm_delete() {
-			return confirm('Are you sure? This data will be permanently deleted from database.');
-		}
-		</script>
         
     </head>
     <body class="page-header-fixed">
@@ -81,45 +127,7 @@ $username = $_SESSION['username'];
         <nav class="cbp-spmenu cbp-spmenu-vertical cbp-spmenu-right" id="cbp-spmenu-s2">
             <h3><span class="pull-left">Sandra Smith</span> <a href="javascript:void(0);" class="pull-right" id="closeRight2"><i class="fa fa-angle-right"></i></a></h3>
             <div class="slimscroll chat">
-                <div class="chat-item chat-item-left">
-                    <div class="chat-image">
-                        <img src="assets/images/avatar2.png" alt="">
-                    </div>
-                    <div class="chat-message">
-                        Hi There!
-                    </div>
-                </div>
-                <div class="chat-item chat-item-right">
-                    <div class="chat-message">
-                        Hi! How are you?
-                    </div>
-                </div>
-                <div class="chat-item chat-item-left">
-                    <div class="chat-image">
-                        <img src="assets/images/avatar2.png" alt="">
-                    </div>
-                    <div class="chat-message">
-                        Fine! do you like my project?
-                    </div>
-                </div>
-                <div class="chat-item chat-item-right">
-                    <div class="chat-message">
-                        Yes, It's clean and creative, good job!
-                    </div>
-                </div>
-                <div class="chat-item chat-item-left">
-                    <div class="chat-image">
-                        <img src="assets/images/avatar2.png" alt="">
-                    </div>
-                    <div class="chat-message">
-                        Thanks, I tried!
-                    </div>
-                </div>
-                <div class="chat-item chat-item-right">
-                    <div class="chat-message">
-                        Good luck with your sales!
-                    </div>
-                </div>
+                
             </div>
             <div class="chat-write">
                 <form class="form-horizontal" action="javascript:void(0);">
@@ -139,45 +147,17 @@ $username = $_SESSION['username'];
             </nav>
             <button class="close-button" id="close-button">Close Menu</button>
         </div>
-        <form class="search-form" action="#" method="GET">
-            <div class="input-group">
-                <input type="text" name="search" class="form-control search-input" placeholder="Search...">
-                <span class="input-group-btn">
-                    <button class="btn btn-default close-search waves-effect waves-button waves-classic" type="button"><i class="fa fa-times"></i></button>
-                </span>
-            </div><!-- Input Group -->
-        </form><!-- Search Form -->
         <main class="page-content content-wrap">
-            <div class="navbar">
-                <div class="navbar-inner">
-                    <div class="sidebar-pusher">
-                        <a href="javascript:void(0);" class="waves-effect waves-button waves-classic push-sidebar">
-                            <i class="fa fa-bars"></i>
-                        </a>
-                    </div>
-                    <div class="logo-box">
-                        <a href="index.php" class="logo-text"><span>AMS~MIT</span></a>
-                    </div><!-- Logo Box -->
-                    <div class="search-button">
-                        <a href="javascript:void(0);" class="waves-effect waves-button waves-classic show-search"><i class="fa fa-search"></i></a>
-                    </div>
-                    <div class="topmenu-outer">
-                         <?php include('top-nav.php');?>
-						<!-- Top Menu -->
-                    </div>
-                </div>
-            </div><!-- Navbar -->
-            <?php include('sidebar.php');?>
-			
-			<!-- Page Sidebar -->
+           <?php include('top-nav.php');?>
+			<?php include('sidebar.php');?>
             <div class="page-inner">
                 <div class="page-title">
-                    <h3>User List</h3>
+                    <h3>Asset Sell Out</h3>
                     <div class="page-breadcrumb">
                         <ol class="breadcrumb">
                             <li><a href="index.php">Home</a></li>
-                            <li><a href="#">User Setup</a></li>
-                            <li class="active">View List</li>
+                            <li><a href="#">Asset</a></li>
+                            <li class="active">Sell Out</li>
                         </ol>
                     </div>
                 </div>
@@ -185,56 +165,65 @@ $username = $_SESSION['username'];
                     <div class="row">
                         <div class="col-md-12">
                             <div class="panel panel-white">
-                                
                                 <div class="panel-body">
-                                   <div class="table-responsive">
-                                    <table id="example" class="display table" style="width: 100%; cellspacing: 0;">
-                                        <thead>
-                                            <tr>
-												<th>Serial No</th>
-												<th>Full Name</th>
-												<th>User Name</th>				
-												<th>User Type</th>
-												<th>Designation</th>
-												<th>Mobile</th>
-												<th>Action</th>
-											</tr>
-                                        </thead>
-                                        
-                                        <tbody>
+									<h4 class="text-danger">
+									<?php  
+									if(isset($error_message)) {echo $error_message;}
+									//if(isset($success_message)) {echo $success_message;}
+									?>
+									</h4>
+									<h4 class="text-success">
+									<?php  
+									//if(isset($error_message)) {echo $error_message;}
+									if(isset($success_message)) {echo $success_message;}
+									?>
+									</h4>
+									<form action="" method="post" >
+										<div class="form-horizontal col-md-6"> 
+											 <h4 class="no-m m-b-sm m-t-lg">Asset Code <span class="text-danger">*</span></h4>
+											 <?php 
+												# here database details      
+												mysql_connect('localhost','root','') or die('cannot connect to the server');
+												mysql_select_db('asset_ms_db') or die('cannot select database');
+
+												$sql = "SELECT asset_code FROM tbl_assetinfo where availability='In Stock'";
+												$result = mysql_query($sql);?>
+												<select name="asset_code" class="js-states form-control" style="display: none; width: 100%" onchange="setDevice(this.value);">
+													<option value="">Please Select Asset</option>
 												<?php
-												$i=0;
-												$result = mysql_query("select * from tbl_login order by name");			
-												while($row=mysql_fetch_array($result))
-												{
-													$i++;
-													?>
-													
-													<tr>
-													<td><?php echo $i; ?></td>
-													<td><?php echo $row['name']; ?></td>
-													<td><?php echo $row['username']; ?></td>
-													<td><?php echo $row['access_type']; ?></td>
-													<td><?php echo $row['designation']; ?></td>
-													<td><?php echo $row['mobile']; ?></td>
-													<td>
-														<a onclick="return confirm_delete();" href="user-delete.php?id=<?php echo $row['id']; ?>type="submit" class="btn btn btn-danger""><span class="glyphicon glyphicon-trash"></span> </a>&nbsp;&nbsp;&nbsp;
-													</td>
-													
-													
-													</tr>
-													
-													<?php
-												}
-												
+													while ($row = mysql_fetch_array($result)) {
+															
+															echo "<option value='" . $row['asset_code'] ."'>" . $row['asset_code'] ."</option>";
+													}
+
+													echo "</select>";
 												?>
-											   
-                                           </tbody>
-                                       </table>  
-                                    </div>
+
+                                            <p id='company' class="help-block text-info"></p>
+                                            <p id='device_type' class="help-block text-info"></p>	
+                                            <p id='model_name' class="help-block text-info"></p>	
+
+											<h4 class="no-m m-b-sm m-t-lg">Customer Name</h4>
+											<input  type="text" name="customer_name" class="form-control" id="input-help-block" placeholder="Customer Name">
+                                            <h4 class="no-m m-b-sm m-t-lg">Customer Phone Number</h4>
+											<input  type="number" name="customer_number" class="form-control" id="input-help-block" placeholder="Customer Phone Number">
+                                            <h4 class="no-m m-b-sm m-t-lg">Customer Address</h4>
+											<input  type="text" name="customer_address" class="form-control" id="input-help-block" placeholder="Customer Address">
+											<h4 class="no-m m-b-sm m-t-lg">Sold Out Date</h4>
+											<input disabled type="text" name = "date" class="form-control" id="input-help-block" placeholder="<?php echo (new \DateTime())->format('Y-m-d H:i:s');?>">
+												
+										</div>
+							
+										</div>
+										<div class="form-horizontal col-md-12">
+										<br />
+										<br />
+											<button name="form1" type="submit" class="btn btn-success btn-addon m-b-sm btn-lg"><i class="fa fa-android"></i> Sold Out</button>
+										</div>
+										
+									</form>
                                 </div>
                             </div>
-                            
                         </div>
                     </div><!-- Row -->
                 </div><!-- Main Wrapper -->
@@ -242,7 +231,64 @@ $username = $_SESSION['username'];
                     <p class="no-s">MIT 21<sup>st</sup> Batch, Institute of Information Technology, University of Dhaka.</p>
                 </div>
             </div><!-- Page Inner -->
-        </main><!-- Page Content --
+        </main><!-- Page Content -->
+        <nav class="cd-nav-container" id="cd-nav">
+            <header>
+                <h3>Navigation</h3>
+                <a href="#0" class="cd-close-nav">Close</a>
+            </header>
+            <ul class="cd-nav list-unstyled">
+                <li class="cd-selected" data-menu="index">
+                    <a href="javsacript:void(0);">
+                        <span>
+                            <i class="glyphicon glyphicon-home"></i>
+                        </span>
+                        <p>Dashboard</p>
+                    </a>
+                </li>
+                <li data-menu="profile">
+                    <a href="javsacript:void(0);">
+                        <span>
+                            <i class="glyphicon glyphicon-user"></i>
+                        </span>
+                        <p>Profile</p>
+                    </a>
+                </li>
+                <li data-menu="inbox">
+                    <a href="javsacript:void(0);">
+                        <span>
+                            <i class="glyphicon glyphicon-envelope"></i>
+                        </span>
+                        <p>Mailbox</p>
+                    </a>
+                </li>
+                <li data-menu="#">
+                    <a href="javsacript:void(0);">
+                        <span>
+                            <i class="glyphicon glyphicon-tasks"></i>
+                        </span>
+                        <p>Tasks</p>
+                    </a>
+                </li>
+                <li data-menu="#">
+                    <a href="javsacript:void(0);">
+                        <span>
+                            <i class="glyphicon glyphicon-cog"></i>
+                        </span>
+                        <p>Settings</p>
+                    </a>
+                </li>
+                <li data-menu="calendar">
+                    <a href="javsacript:void(0);">
+                        <span>
+                            <i class="glyphicon glyphicon-calendar"></i>
+                        </span>
+                        <p>Calendar</p>
+                    </a>
+                </li>
+            </ul>
+        </nav>
+        <div class="cd-overlay"></div>
 	
 
         <!-- Javascripts -->
@@ -258,13 +304,9 @@ $username = $_SESSION['username'];
         <script src="assets/plugins/offcanvasmenueffects/js/main.js"></script>
         <script src="assets/plugins/waves/waves.min.js"></script>
         <script src="assets/plugins/3d-bold-navigation/js/main.js"></script>
-        <script src="assets/plugins/jquery-mockjax-master/jquery.mockjax.js"></script>
-        <script src="assets/plugins/moment/moment.js"></script>
-        <script src="assets/plugins/datatables/js/jquery.datatables.min.js"></script>
-        <script src="assets/plugins/x-editable/bootstrap3-editable/js/bootstrap-editable.js"></script>
-        <script src="assets/plugins/bootstrap-datepicker/js/bootstrap-datepicker.js"></script>
+        <script src="assets/plugins/select2/js/select2.min.js"></script>
         <script src="assets/js/modern.min.js"></script>
-        <script src="assets/js/pages/table-data.js"></script>
+        <script src="assets/js/pages/form-select2.js"></script>
         
     </body>
 </html>
